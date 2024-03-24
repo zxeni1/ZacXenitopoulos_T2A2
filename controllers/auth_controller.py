@@ -1,6 +1,9 @@
+from datetime import timedelta
+
 from flask import Blueprint, request, jsonify
-from init import db, bcrypt
+from init import db, bcrypt, jwt
 from models.user import User, user_schema
+from flask_jwt_extended import create_access_token
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -23,7 +26,8 @@ def auth_register():
     db.session.add(new_user)
     db.session.commit()
 
-    return user_schema.jsonify(new_user), 201
+    access_token = create_access_token(identity=new_user.id)
+    return jsonify(access_token=access_token), 201
 
 @auth_bp.route("/login", methods=["POST"])
 def auth_login():
@@ -38,4 +42,6 @@ def auth_login():
     if not user or not bcrypt.check_password_hash(user.password, password):
         return jsonify({"error": "Invalid email or password"}), 401
 
-    return jsonify({"email": user.email, "message": "Login successful"}), 200
+    expires = timedelta(days=1)
+    access_token = create_access_token(identity=user.id, expires_delta=timedelta(days=1))
+    return jsonify({"access_token": access_token, "message": "Login successful"}), 200

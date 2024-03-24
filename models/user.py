@@ -16,7 +16,3 @@ class UserSchema(ma.Schema):
 
 user_schema = UserSchema(exclude=['password'])
 users_schema = UserSchema(many=True, exclude=['password'])
-
-
-
-
