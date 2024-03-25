@@ -10,13 +10,10 @@ class User(db.Model):
     password = db.Column(db.String, nullable=False)
     is_admin = db.Column(db.Boolean, default=False)
 
-    workouts = db.relationship('Workout', back_populates='user', cascade='all delete')
+    workouts = db.relationship('Workout', back_populates='user', cascade='all, delete')
 
 
 class UserSchema(ma.Schema):
-
-    workouts = fields.List(fields.Nested('WorkoutSchema', exclude=['user']))
-
     class Meta: 
         fields = ('id', 'name', 'email', 'password', 'is_admin')
 
