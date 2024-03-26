@@ -49,8 +49,24 @@ def delete_workout(workout_id):
         return {'message': f"Workout '{workout.workout_name}' deleted successfully"}
     else:
         return {'error': f"Workout with id {workout_id} not found"}, 404
+    
 
+@workouts_bp.route('/<int:workout_id>', methods=["PUT", "PATCH"])
+def update_workout(workout_id):
+    body_data = request.get_json()
+    workout = Workout.query.get_or_404(workout_id)
 
+    if workout:
+        workout.workout_name = body_data.get('workout_name', workout.workout_name)
+        workout.description = body_data.get('description', workout.description)
+        workout.date = body_data.get('date', workout.date)
+        workout.workout_rating = body_data.get('workout_rating', workout.workout_rating)
+
+        db.session.commit()
+        return workout_schema.dump(workout)
+    
+    else:
+        return {'error': f"Workout with id '{workout_id}' not found"}, 404
 
 
 
