@@ -26,5 +26,4 @@ def create_app():
     from controllers.workout_controller import workouts_bp
     app.register_blueprint(workouts_bp)
     
-    
     return app
