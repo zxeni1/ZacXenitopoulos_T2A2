@@ -9,7 +9,8 @@ class Exercise(db.Model):
     sets = db.Column(db.String(20))
     reps = db.Column(db.String(20))
     weight = db.Column(db.String(20))
-    user_id = db.Column(db.Integer, db.ForeginKey ("users.id"), nullable=False)
+
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     workout_id = db.Column(db.Integer, db.ForeignKey("workouts.id"), nullable=False)
 
     user = db.relationship("User", back_populates="exercises")

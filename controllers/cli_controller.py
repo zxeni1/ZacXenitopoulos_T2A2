@@ -5,6 +5,7 @@ from flask import Blueprint
 from init import db, bcrypt
 from models.user import User
 from models.workout import Workout
+from models.exercise import Exercise
 
 db_commands = Blueprint('db', __name__)
 
@@ -68,6 +69,44 @@ def seed_tables():
     ]
 
     db.session.add_all(workouts)
+    db.session.commit()
+
+    exercises = [
+        Exercise(
+            exercise_name="Bench Press",
+            sets="3",
+            reps="12",
+            weight="80kg",
+            user=users[0],
+            workout=workouts[0]  # Adjusted index to match the available workouts
+        ),
+        Exercise(
+            exercise_name="Deadlifts",
+            sets="5",
+            reps="5",
+            weight="100kg",
+            user=users[1],
+            workout=workouts[2]  # Adjusted index to match the available workouts
+        ),
+        Exercise(
+            exercise_name="Treadmill",
+            sets="5",
+            reps="5 minutes",
+            weight="0kg",
+            user=users[1],
+            workout=workouts[3]  # Adjusted index to match the available workouts
+        ),
+        Exercise(
+            exercise_name="Squats",
+            sets="3",
+            reps="15",
+            weight="60kg",
+            user=users[0],
+            workout=workouts[1]  # Adjusted index to match the available workouts
+        )
+    ]
+
+    db.session.add_all(exercises)
     db.session.commit()
 
     print("Tables seeded")
