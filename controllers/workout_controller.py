@@ -3,6 +3,7 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.workout import Workout, workouts_schema, workout_schema
+from models.exercise import Exercise, exercise_schema
 
 
 workouts_bp = Blueprint('workouts', __name__, url_prefix='/workouts')
@@ -67,6 +68,24 @@ def update_workout(workout_id):
     
     else:
         return {'error': f"Workout with id '{workout_id}' not found"}, 404
-
-
-
+    
+@workouts_bp.route("/<int:workout_id>/exercises", methods=["POST"])
+@jwt_required()
+def create_exercise(workout_id):
+    body_data = request.get_json()
+    stmt = db.select(Workout).filter_by(id=workout_id)
+    workout = db.session.scalar(stmt)
+    if workout:
+        exercise = Exercise(
+          exercise_name = body_data.get('exercise_name'),
+          sets = body_data.get('sets'),
+          reps = body_data.get('reps'),
+          weight = body_data.get('weight'),
+          user_id = get_jwt_identity(),
+          workout_id = workout.id
+        )
+        db.session.add(exercise)
+        db.session.commit()
+        return exercise_schema.dump(exercise), 201
+    else:
+        return {"error": f"Workout with id '{workout_id}' does not exist"}, 404

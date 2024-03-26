@@ -16,17 +16,18 @@ class Exercise(db.Model):
     user = db.relationship("User", back_populates="exercises")
     workout = db.relationship("Workout", back_populates="exercises")
 
-    class ExerciseSchema(ma.Schema):
+class ExerciseSchema(ma.Schema):
 
-        user = fields.Nested('UserSchema', only=['name', 'email'])
+    user = fields.Nested('UserSchema', only=['name', 'email'])
 
-        workout = fields.Nested('WorkoutSchema', exclude=['exercises'])
+    workout = fields.Nested('WorkoutSchema', exclude=['exercises'])
 
-        class Meta:
-            fields = ('id', 'exercise_name', 'user', 'workout')
+    class Meta:
+        fields = ('id', 'exercise_name', 'user', 'workout')
     
-    exercise_schema = ExerciseSchema()
-    comments_schema = ExerciseSchema(many=True)
+exercise_schema = ExerciseSchema()
+exercises_schema = ExerciseSchema(many=True)
+
 
 
 
