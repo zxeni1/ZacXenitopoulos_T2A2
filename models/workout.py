@@ -13,7 +13,7 @@ class Workout(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     user = db.relationship('User', back_populates='workouts')
-    exercises = db.relationship('Exercise', back_populates='workout')
+    exercises = db.relationship('Exercise', back_populates='workout', cascade='all, delete')
 
 class WorkoutSchema(ma.Schema):
     

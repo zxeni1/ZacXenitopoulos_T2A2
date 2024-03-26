@@ -78,7 +78,7 @@ def seed_tables():
             reps="12",
             weight="80kg",
             user=users[0],
-            workout=workouts[0]  # Adjusted index to match the available workouts
+            workout=workouts[0]  
         ),
         Exercise(
             exercise_name="Deadlifts",
@@ -86,7 +86,7 @@ def seed_tables():
             reps="5",
             weight="100kg",
             user=users[1],
-            workout=workouts[2]  # Adjusted index to match the available workouts
+            workout=workouts[2]  
         ),
         Exercise(
             exercise_name="Treadmill",
@@ -94,7 +94,7 @@ def seed_tables():
             reps="5 minutes",
             weight="0kg",
             user=users[1],
-            workout=workouts[3]  # Adjusted index to match the available workouts
+            workout=workouts[3]  
         ),
         Exercise(
             exercise_name="Squats",
@@ -102,7 +102,7 @@ def seed_tables():
             reps="15",
             weight="60kg",
             user=users[0],
-            workout=workouts[1]  # Adjusted index to match the available workouts
+            workout=workouts[1]  
         )
     ]
 
