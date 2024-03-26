@@ -3,13 +3,12 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.workout import Workout, workouts_schema, workout_schema
-from models.exercise import Exercise, exercise_schema
-
+from models.exercise import Exercise, ExerciseSchema, exercise_schema
 
 workouts_bp = Blueprint('workouts', __name__, url_prefix='/workouts')
 
 @workouts_bp.route('/')
-def get_all_cards():
+def get_all_workouts():
     stmt = db.select(Workout).order_by(Workout.date.desc())
     workouts = db.session.scalars(stmt)
     return workouts_schema.dump(workouts)
@@ -21,18 +20,18 @@ def get_one_workout(workout_id):
     if workout:
         return workout_schema.dump(workout)
     else:
-        return{"error": f"Workout with id {workout_id} not found"}, 404
-    
+        return {"error": f"Workout with id {workout_id} not found"}, 404
+
 @workouts_bp.route('/', methods=["POST"])
 @jwt_required()
 def create_workout():
     body_data = request.get_json()
     workout = Workout(
-        workout_name = body_data.get('workout_name'),
-        description = body_data.get('description'),
-        date = date.today(),
-        workout_rating = body_data.get('workout_rating'),
-        user_id = get_jwt_identity()
+        workout_name=body_data.get('workout_name'),
+        description=body_data.get('description'),
+        date=date.today(),
+        workout_rating=body_data.get('workout_rating'),
+        user_id=get_jwt_identity()
     )
 
     db.session.add(workout)
@@ -50,7 +49,6 @@ def delete_workout(workout_id):
         return {'message': f"Workout '{workout.workout_name}' deleted successfully"}
     else:
         return {'error': f"Workout with id {workout_id} not found"}, 404
-    
 
 @workouts_bp.route('/<int:workout_id>', methods=["PUT", "PATCH"])
 def update_workout(workout_id):
@@ -68,7 +66,7 @@ def update_workout(workout_id):
     
     else:
         return {'error': f"Workout with id '{workout_id}' not found"}, 404
-    
+
 @workouts_bp.route("/<int:workout_id>/exercises", methods=["POST"])
 @jwt_required()
 def create_exercise(workout_id):
@@ -77,15 +75,49 @@ def create_exercise(workout_id):
     workout = db.session.scalar(stmt)
     if workout:
         exercise = Exercise(
-          exercise_name = body_data.get('exercise_name'),
-          sets = body_data.get('sets'),
-          reps = body_data.get('reps'),
-          weight = body_data.get('weight'),
-          user_id = get_jwt_identity(),
-          workout_id = workout.id
+            exercise_name=body_data.get('exercise_name'),
+            sets=body_data.get('sets'),
+            reps=body_data.get('reps'),
+            weight=body_data.get('weight'),
+            user_id=get_jwt_identity(),
+            workout_id=workout.id
         )
         db.session.add(exercise)
         db.session.commit()
         return exercise_schema.dump(exercise), 201
     else:
         return {"error": f"Workout with id '{workout_id}' does not exist"}, 404
+
+@workouts_bp.route('/<int:workout_id>/exercises/<int:exercise_id>', methods=["DELETE"])
+@jwt_required()
+def delete_exercise(workout_id, exercise_id):
+    stmt = db.select(Exercise).filter_by(id=exercise_id)
+    exercise = db.session.scalar(stmt)
+    if exercise and exercise.workout.id == workout_id:
+        db.session.delete(exercise)
+        db.session.commit()
+        return{"message": f"Exercise with id '{exercise_id}' has been deleted"}
+    else:
+        return {"error": f"Exercise with id '{exercise_id}' not found in workout with id {workout_id}"}, 404
+    
+@workouts_bp.route('/<int:workout_id>/exercises/<int:exercise_id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def edit_exercise(workout_id, exercise_id):
+    body_data = request.get_json()
+    stmt = db.select(Exercise).filter_by(id=exercise_id, workout_id=workout_id)
+    exercise = db.session.scalar(stmt)
+    if exercise:
+        exercise.exercise_name = body_data.get('exercise_name') or exercise.exercise_name
+        exercise.sets = body_data.get('sets') or exercise.sets
+        exercise.reps = body_data.get('reps') or exercise.reps
+        exercise.weight = body_data.get('weight') or exercise.weight
+        db.session.commit()
+        return exercise_schema.dump(exercise)
+    else: 
+        return {"error": f"Exercise with id {exercise_id} not found in workout with id {workout_id}"}
+
+
+
+
+
+    

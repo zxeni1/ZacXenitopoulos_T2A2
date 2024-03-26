@@ -1,5 +1,7 @@
 from init import db, ma
 from marshmallow import fields
+from models.user import UserSchema
+from models.workout import WorkoutSchema
 
 class Exercise(db.Model):
     __tablename__ = "exercises"
@@ -17,13 +19,14 @@ class Exercise(db.Model):
     workout = db.relationship("Workout", back_populates="exercises")
 
 class ExerciseSchema(ma.Schema):
-
-    user = fields.Nested('UserSchema', only=['name', 'email'])
-
-    workout = fields.Nested('WorkoutSchema', exclude=['exercises'])
+    user = fields.Nested(UserSchema, only=['name', 'email'])
+    workout = fields.Nested(WorkoutSchema, exclude=['exercises'])
+    sets = fields.String()
+    reps = fields.String()
+    weight = fields.String()
 
     class Meta:
-        fields = ('id', 'exercise_name', 'user', 'workout')
+        fields = ('id', 'exercise_name', 'workout', 'sets', 'reps', 'weight')
     
 exercise_schema = ExerciseSchema()
 exercises_schema = ExerciseSchema(many=True)
