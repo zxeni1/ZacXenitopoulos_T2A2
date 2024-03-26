@@ -15,7 +15,7 @@ class Workout(db.Model):
     user = db.relationship('User', back_populates='workouts')
 
 class WorkoutSchema(ma.Schema):
-
+    
     user = fields.Nested('UserSchema', only = ['name', 'email'])
     
     class Meta:
