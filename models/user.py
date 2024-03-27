@@ -14,6 +14,8 @@ class User(db.Model):
 
     exercises = db.relationship('Exercise', back_populates='user', cascade='all, delete')
 
+    social_shares = db.relationship('SocialShare', back_populates='user', cascade='all, delete')
+
 
 class UserSchema(ma.Schema):
 
