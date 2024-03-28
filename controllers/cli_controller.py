@@ -4,6 +4,7 @@ from init import db, bcrypt
 from models.user import User
 from models.workout import Workout
 from models.exercise import Exercise
+from models.progress import Progress  
 
 db_commands = Blueprint('db', __name__)
 
@@ -105,4 +106,23 @@ def seed_tables():
     db.session.add_all(exercises)
     db.session.commit()
 
-    print("Tables seeded")
+    # Create progress
+    progress = [
+        Progress(
+            weight=80,
+            bmi=25,
+            muscle_mass=70,
+            waist_measurement=32,
+            workout=workouts[0]
+        ),
+        Progress(
+            weight=75,
+            bmi=23,
+            muscle_mass=72,
+            waist_measurement=31,
+            workout=workouts[1]
+        )
+    ]
+    db.session.add_all(progress)
+    db.session.commit()
+
