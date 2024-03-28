@@ -1,8 +1,7 @@
 from init import db, ma
 from marshmallow import fields
-from models.user import UserSchema
-from models.workout import WorkoutSchema
 
+# Define Exercise model
 class Exercise(db.Model):
     __tablename__ = "exercises"
     
@@ -13,20 +12,27 @@ class Exercise(db.Model):
     weight = db.Column(db.String(20))
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    workout_id = db.Column(db.Integer, db.ForeignKey("workouts.id"), nullable=False)
+    workout_id = db.Column(db.Integer, db.ForeignKey("workouts.id", ondelete="CASCADE"), nullable=False)
 
     user = db.relationship("User", back_populates="exercises")
     workout = db.relationship("Workout", back_populates="exercises")
 
+# Define ExerciseSchema
 class ExerciseSchema(ma.Schema):
-    user = fields.Nested(UserSchema)
-    workout = fields.Nested(WorkoutSchema)
+    user = fields.Nested('UserSchema')
+    workout = fields.Nested('WorkoutSchema')
 
     class Meta:
         fields = ('id', 'exercise_name', 'sets', 'reps', 'weight', 'user', 'workout')
 
 exercise_schema = ExerciseSchema()
 exercises_schema = ExerciseSchema(many=True)
+
+
+
+
+
+
 
 
 

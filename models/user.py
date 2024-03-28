@@ -1,5 +1,7 @@
-from init import db, ma 
+from init import db, ma
 from marshmallow import fields
+from models.workout import WorkoutSchema
+from models.exercise import ExerciseSchema
 
 class User(db.Model):
     __tablename__ = "users"
@@ -11,20 +13,15 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
 
     workouts = db.relationship('Workout', back_populates='user', cascade='all, delete')
-
     exercises = db.relationship('Exercise', back_populates='user', cascade='all, delete')
 
-    social_shares = db.relationship('SocialShare', back_populates='user', cascade='all, delete')
-
-
 class UserSchema(ma.Schema):
-
-    workouts = fields.List(fields.Nested('WorkoutSchema', exclude=['user']))
-
-    exercises = fields.List(fields.Nested('ExerciseSchema', exclude=['user']))
+    workouts = fields.List(fields.Nested(WorkoutSchema, exclude=['user']))
+    exercises = fields.List(fields.Nested(ExerciseSchema, exclude=['user']))
 
     class Meta: 
         fields = ('id', 'name', 'email', 'password', 'is_admin', 'workouts', 'exercises')
 
 user_schema = UserSchema(exclude=['password'])
 users_schema = UserSchema(many=True, exclude=['password'])
+

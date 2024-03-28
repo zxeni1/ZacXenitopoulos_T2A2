@@ -4,7 +4,6 @@ from init import db, bcrypt
 from models.user import User
 from models.workout import Workout
 from models.exercise import Exercise
-from models.social_share import SocialShare
 
 db_commands = Blueprint('db', __name__)
 
@@ -104,30 +103,6 @@ def seed_tables():
         )
     ]
     db.session.add_all(exercises)
-    db.session.commit()
-
-    # Create social shares
-    social_shares = [
-        SocialShare(
-            share_date=date.today(),
-            share_message="First workout of the week",
-            workout_id=workouts[0].id,
-            user_id=admin_user.id
-        ),
-        SocialShare(
-            share_date=date.today(),
-            share_message="Second workout of the week",
-            workout_id=workouts[1].id,
-            user_id=regular_user.id
-        ),
-        SocialShare(
-            share_date=date.today(),
-            share_message="Third workout of the week",
-            workout_id=workouts[2].id,
-            user_id=regular_user.id
-        )
-    ]
-    db.session.add_all(social_shares)
     db.session.commit()
 
     print("Tables seeded")
