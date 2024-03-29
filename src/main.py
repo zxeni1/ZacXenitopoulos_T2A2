@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from init import db, ma, bcrypt, jwt
+from init import db, ma, bcrypt, jwt  # Assuming these modules are in the root level
 
 def create_app():
     app = Flask(__name__)
@@ -8,8 +8,8 @@ def create_app():
     app.json.sort_keys = False
     
     #Config 
-    app.config['SQLALCHEMY_DATABASE_URI']=os.environ.get("DATABASE_URI")
-    app.config["JWT_SECRET_KEY"]=os.environ.get("JWT_SECRET_KEY")
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URI")
+    app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY")
     
     # Connect libraries
     db.init_app(app)
