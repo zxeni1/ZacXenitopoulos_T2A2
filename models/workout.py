@@ -24,7 +24,7 @@ class WorkoutSchema(ma.Schema):
 
     exercises = fields.List(fields.Nested('ExerciseSchema', only=['exercise_name', 'sets', 'reps', 'weight', 'id']))
 
-    progress = fields.List(fields.Nested('ProgressSchema', only=['id', 'weight', 'bmi', 'muscle_mass', 'waist_measurement']))
+    progress = fields.List(fields.Nested('ProgressSchema', only=['id', 'weight', 'bmi', 'muscle_mass', 'waist_measurements']))
     
     class Meta:
         fields = ('id', 'user', 'workout_name', 'description', 'date', 'workout_rating', 'exercises', 'progress')  

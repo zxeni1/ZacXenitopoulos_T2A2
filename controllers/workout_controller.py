@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 from init import db
 from models.workout import Workout, workouts_schema, workout_schema
 from models.exercise import Exercise, ExerciseSchema, exercise_schema
+from models.progress import Progress, ProgressSchema, progress_schema
 
 workouts_bp = Blueprint('workouts', __name__, url_prefix='/workouts')
 
@@ -115,6 +116,64 @@ def edit_exercise(workout_id, exercise_id):
         return exercise_schema.dump(exercise)
     else: 
         return {"error": f"Exercise with id {exercise_id} not found in workout with id {workout_id}"}
+    
+@workouts_bp.route('/<int:workout_id>/progress', methods=["GET"])
+def get_progress(workout_id):
+    stmt = db.select(Progress).filter_by(workout_id=workout_id)
+    progress = db.session.scalars(stmt)
+    return progress_schema.dump(progress)
+
+@workouts_bp.route('/<int:workout_id>/progress/<int:progress_id>', methods=["GET"])
+def get_one_progress(workout_id, progress_id):
+    stmt = db.select(Progress).filter_by(id=progress_id, workout_id=workout_id)
+    progress = db.session.scalar(stmt)
+    if progress:
+        return progress_schema.dump(progress)
+    else:
+        return {"error": f"Progress with id {progress_id} not found in workout with id {workout_id}"}, 404
+
+@workouts_bp.route('/<int:workout_id>/progress', methods=["POST"])
+@jwt_required()
+def add_progress(workout_id):
+    body_data = request.get_json()
+    progress = Progress(
+        weight=body_data.get('weight'),
+        bmi=body_data.get('bmi'),
+        muscle_mass=body_data.get('muscle_mass'),
+        waist_measurements=body_data.get('waist_measurements'),
+        workout_id=workout_id
+    )
+    db.session.add(progress)
+    db.session.commit()
+    return progress_schema.dump(progress), 201
+
+@workouts_bp.route('/<int:workout_id>/progress/<int:progress_id>', methods=["DELETE"])
+@jwt_required()
+def delete_progress(workout_id, progress_id):
+    stmt = db.select(Progress).filter_by(id=progress_id, workout_id=workout_id)
+    progress = db.session.scalar(stmt)
+    if progress:
+        db.session.delete(progress)
+        db.session.commit()
+        return {"message": f"Progress with id {progress_id} has been deleted"}
+    else:
+        return {"error": f"Progress with id {progress_id} not found in workout with id {workout_id}"}, 404
+
+@workouts_bp.route('/<int:workout_id>/progress/<int:progress_id>', methods=["PUT", "PATCH"])
+@jwt_required()
+def edit_progress(workout_id, progress_id):
+    body_data = request.get_json()
+    stmt = db.select(Progress).filter_by(id=progress_id, workout_id=workout_id)
+    progress = db.session.scalar(stmt)
+    if progress:
+        progress.weight = body_data.get('weight', progress.weight)
+        progress.bmi = body_data.get('bmi', progress.bmi)
+        progress.muscle_mass = body_data.get('muscle_mass', progress.muscle_mass)
+        progress.waist_measurements = body_data.get('waist_measurements', progress.waist_measurements)
+        db.session.commit()
+        return progress_schema.dump(progress)
+    else: 
+        return {"error": f"Progress with id {progress_id} not found in workout with id {workout_id}"}, 404
 
 
 

@@ -20,6 +20,15 @@ def drop_tables():
 
 @db_commands.cli.command('seed')
 def seed_tables():
+    # Drop all existing tables
+    db.drop_all()
+    print("Tables dropped")
+
+    # Create all tables
+    db.create_all()
+    print("Tables created")
+
+    # Seed initial data
     # Create users
     admin_user = User(
         email="admin@email.com",
@@ -106,23 +115,25 @@ def seed_tables():
     db.session.add_all(exercises)
     db.session.commit()
 
-    # Create progress
-    progress = [
+    # Seed progress data
+    progress_data = [
         Progress(
-            weight=80,
-            bmi=25,
-            muscle_mass=70,
-            waist_measurement=32,
+            weight=80.5,
+            bmi=22.1,
+            muscle_mass=65.3,
+            waist_measurements=30.5,
             workout=workouts[0]
         ),
         Progress(
-            weight=75,
-            bmi=23,
-            muscle_mass=72,
-            waist_measurement=31,
+            weight=75.8,
+            bmi=20.3,
+            muscle_mass=63.8,
+            waist_measurements=29.2,
             workout=workouts[1]
         )
     ]
-    db.session.add_all(progress)
+    db.session.add_all(progress_data)
     db.session.commit()
+
+    print("Tables seeded")
 
